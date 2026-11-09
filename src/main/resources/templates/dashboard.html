@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Dashboard', ~{::section})}">
+<body><section>
+
+  <!-- STATS -->
+  <div class="stats-grid">
+    <div class="stat-card green">
+      <div class="stat-icon">🚗</div>
+      <div class="stat-value" th:text="${totalVeiculos}">0</div>
+      <div class="stat-label">Veículos cadastrados</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-icon">🔑</div>
+      <div class="stat-value" th:text="${veiculosEmUso}">0</div>
+      <div class="stat-label">Em uso agora</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon">✅</div>
+      <div class="stat-value" th:text="${veiculosDisponiveis}">0</div>
+      <div class="stat-label">Disponíveis</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-icon">👤</div>
+      <div class="stat-value" th:text="${totalMotoristas}">0</div>
+      <div class="stat-label">Motoristas</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- MÉTRICAS AMBIENTAIS -->
+    <div class="card">
+      <div class="card-title">⛽ Consumo Acumulado</div>
+      <div class="stats-grid" style="grid-template-columns:1fr 1fr;gap:12px;margin-bottom:0">
+        <div style="background:#f4f6f8;border-radius:10px;padding:14px">
+          <div style="font-size:11px;color:#6b7280;margin-bottom:4px">KM Rodados</div>
+          <div style="font-size:22px;font-weight:700;color:#1a1a1e" th:text="${totalKm} + ' km'">0 km</div>
+        </div>
+        <div style="background:#f4f6f8;border-radius:10px;padding:14px">
+          <div style="font-size:11px;color:#6b7280;margin-bottom:4px">Litros</div>
+          <div style="font-size:22px;font-weight:700;color:#1a1a1e" th:text="${totalLitros} + ' L'">0 L</div>
+        </div>
+        <div style="background:#fde8e8;border-radius:10px;padding:14px">
+          <div style="font-size:11px;color:#c0392b;margin-bottom:4px">Custo Total</div>
+          <div style="font-size:22px;font-weight:700;color:#c0392b" th:text="'R$ ' + ${totalCusto}">R$ 0</div>
+        </div>
+        <div style="background:#fff3cd;border-radius:10px;padding:14px">
+          <div style="font-size:11px;color:#856404;margin-bottom:4px">CO₂ Emitido</div>
+          <div style="font-size:22px;font-weight:700;color:#856404" th:text="${totalCo2} + ' kg'">0 kg</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPARATIVO ELÉTRICO -->
+    <div class="compare-card">
+      <h3>⚡ Comparativo — Frota Elétrica</h3>
+      <div class="compare-value" th:text="'R$ ' + ${economiaPotencial}">R$ 0</div>
+      <div class="compare-sub">de economia potencial no período</div>
+      <div class="compare-grid">
+        <div class="compare-item">
+          <div class="compare-item-val" th:text="'R$ ' + ${totalCusto}">R$ 0</div>
+          <div class="compare-item-label">Custo combustão atual</div>
+        </div>
+        <div class="compare-item">
+          <div class="compare-item-val" th:text="'R$ ' + ${custoEletrico}">R$ 0</div>
+          <div class="compare-item-label">Custo se fosse elétrico</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;font-size:11px;opacity:.5">* Baseado em R$ 0,80/kWh e 6,5 km/kWh médio</div>
+    </div>
+  </div>
+
+  <!-- ÚLTIMOS REGISTROS -->
+  <div class="card mt-4">
+    <div class="card-title">📋 Últimas Atividades</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Veículo</th>
+            <th>Motorista</th>
+            <th>Destino</th>
+            <th>Saída</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="r : ${ultimosRegistros}">
+            <td th:text="${r.veiculo.modelo + ' · ' + r.veiculo.placa}">-</td>
+            <td th:text="${r.motorista.nome}">-</td>
+            <td th:text="${r.destino}">-</td>
+            <td th:text="${r.horaSaidaFormatada}">-</td>
+            <td>
+              <span th:if="${r.status == 'em_uso'}" class="badge badge-orange">Em uso</span>
+              <span th:if="${r.status == 'finalizado'}" class="badge badge-green">Finalizado</span>
+            </td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(ultimosRegistros)}">
+            <td colspan="5" style="text-align:center;color:#6b7280;padding:24px">Nenhum registro encontrado</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</section></body>
+</html>

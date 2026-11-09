@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Registros', ~{::section})}">
+<body><section>
+
+  <!-- FORMULÁRIO DE SAÍDA -->
+  <div class="card mb-4">
+    <div class="card-title">🔑 Registrar Saída de Veículo</div>
+    <form th:action="@{/registros/saida}" method="post">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Veículo *</label>
+          <select name="veiculoId" required>
+            <option value="">Selecione um veículo...</option>
+            <option th:each="v : ${veiculos}" th:value="${v.id}"
+                    th:text="${v.modelo + ' — ' + v.placa}">-</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Motorista *</label>
+          <select name="motoristaId" required>
+            <option value="">Selecione o motorista...</option>
+            <option th:each="m : ${motoristas}" th:value="${m.id}" th:text="${m.nome}">-</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>KM na Saída *</label>
+          <input type="number" step="0.1" name="kmSaida" placeholder="Ex: 45230" required/>
+        </div>
+        <div class="form-group">
+          <label>Destino *</label>
+          <input type="text" name="destino" placeholder="Ex: Cliente XYZ — Campinas" required/>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary mt-4">🚗 Registrar Saída</button>
+    </form>
+  </div>
+
+  <!-- LISTA DE REGISTROS -->
+  <div class="card">
+    <div class="card-title">📋 Todos os Registros</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Veículo</th>
+            <th>Motorista</th>
+            <th>Destino</th>
+            <th>Saída</th>
+            <th>Retorno</th>
+            <th>Distância</th>
+            <th>Custo R$</th>
+            <th>CO₂ kg</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="r : ${registros}">
+            <td style="font-weight:500" th:text="${r.veiculo.modelo + ' · ' + r.veiculo.placa}">-</td>
+            <td th:text="${r.motorista.nome}">-</td>
+            <td th:text="${r.destino}">-</td>
+            <td th:text="${r.horaSaidaFormatada}">-</td>
+            <td th:text="${r.horaRetornoFormatada}">-</td>
+            <td th:text="${r.distanciaKm != null ? #numbers.formatDecimal(r.distanciaKm, 1, 1) + ' km' : '-'}">-</td>
+            <td th:text="${r.custoReais != null ? 'R$ ' + #numbers.formatDecimal(r.custoReais, 1, 2) : '-'}">-</td>
+            <td th:text="${r.co2Kg != null ? #numbers.formatDecimal(r.co2Kg, 1, 1) + ' kg' : '-'}">-</td>
+            <td>
+              <span th:if="${r.status == 'em_uso'}" class="badge badge-orange">Em uso</span>
+              <span th:if="${r.status == 'finalizado'}" class="badge badge-green">Finalizado</span>
+            </td>
+            <td>
+              <div class="flex gap-2">
+                <!-- Botão retorno se em uso -->
+                <form th:if="${r.status == 'em_uso'}" th:action="@{/registros/retorno/{id}(id=${r.id})}"
+                      method="post" style="display:flex;gap:6px;align-items:center">
+                  <input type="number" step="0.1" name="kmRetorno" placeholder="KM retorno"
+                         style="width:110px;padding:5px 8px;font-size:12px" required/>
+                  <button type="submit" class="btn btn-primary btn-sm">✔</button>
+                </form>
+                <a th:href="@{/registros/excluir/{id}(id=${r.id})}" class="btn btn-danger btn-sm"
+                   onclick="return confirm('Excluir registro?')">🗑️</a>
+              </div>
+            </td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(registros)}">
+            <td colspan="10" style="text-align:center;color:#6b7280;padding:24px">Nenhum registro encontrado</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</section></body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout('Motoristas', ~{::section})}">
+<body><section>
+
+  <div class="grid-2" style="align-items:start">
+
+    <!-- FORMULÁRIO -->
+    <div class="card">
+      <div class="card-title">👤 <span th:text="${motorista.id != null} ? 'Editar Motorista' : 'Novo Motorista'">Novo Motorista</span></div>
+      <form th:action="@{/motoristas/salvar}" method="post">
+        <input type="hidden" th:field="*{motorista.id}"/>
+        <div class="form-grid">
+          <div class="form-group" style="grid-column:span 2">
+            <label>Nome completo *</label>
+            <input type="text" name="nome" th:value="${motorista.nome}" placeholder="Nome do motorista" required/>
+          </div>
+          <div class="form-group">
+            <label>CNH *</label>
+            <input type="text" name="cnh" th:value="${motorista.cnh}" placeholder="Nº da CNH" required/>
+          </div>
+          <div class="form-group">
+            <label>Telefone</label>
+            <input type="text" name="telefone" th:value="${motorista.telefone}" placeholder="(11) 99999-9999"/>
+          </div>
+          <div class="form-group">
+            <label>E-mail</label>
+            <input type="email" name="email" th:value="${motorista.email}" placeholder="email@empresa.com"/>
+          </div>
+          <div class="form-group">
+            <label>Departamento</label>
+            <input type="text" name="departamento" th:value="${motorista.departamento}" placeholder="Ex: Logística"/>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-4">
+          <button type="submit" class="btn btn-primary">💾 Salvar</button>
+          <a href="/motoristas" class="btn btn-warning">✕ Cancelar</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- LISTA -->
+    <div class="card">
+      <div class="card-title">📋 Motoristas Cadastrados</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>CNH</th>
+              <th>Departamento</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="m : ${motoristas}">
+              <td style="font-weight:500" th:text="${m.nome}">-</td>
+              <td th:text="${m.cnh}">-</td>
+              <td th:text="${m.departamento ?: '-'}">-</td>
+              <td>
+                <div class="flex gap-2">
+                  <a th:href="@{/motoristas/editar/{id}(id=${m.id})}" class="btn btn-blue btn-sm">✏️</a>
+                  <a th:href="@{/motoristas/excluir/{id}(id=${m.id})}" class="btn btn-danger btn-sm"
+                     onclick="return confirm('Excluir motorista?')">🗑️</a>
+                </div>
+              </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(motoristas)}">
+              <td colspan="4" style="text-align:center;color:#6b7280;padding:24px">Nenhum motorista cadastrado</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</section></body>
+</html>
